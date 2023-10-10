@@ -1,0 +1,29 @@
+services:
+  server:
+    image: bpf-tcp-proxy-sample-server
+    build:
+      context: .
+      target: bpf-tcp-proxy-sample
+    container_name: server
+    command: ["bpf-tcp-proxy-sample", "server", "--local", ":8080"]
+    network_mode: host
+  proxy:
+    image: bpf-tcp-proxy-sample-proxy
+    build:
+      context: .
+      target: bpf-tcp-proxy-sample
+    container_name: proxy
+    command:
+      - "bpf-tcp-proxy-sample"
+      - "proxy"
+      - "--local"
+      - ":8081"
+      - "--remote"
+      - "10.121.240.150:8080"
+      - "--bpf"
+    privileged: true
+    network_mode: host
+    volumes:
+      - /usr/src:/usr/src:ro
+      - /lib/modules:/lib/modules:ro
+      - /sys:/sys:ro
